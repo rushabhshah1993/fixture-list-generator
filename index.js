@@ -25,7 +25,7 @@ const addToParticipantsObj = arr => {
 }
 
 const createTemplateRounds = length => {
-    for(i=1; i<=length-1; i++) {
+    for(let i=1; i<=length-1; i++) {
         rounds[`round${i}`] = {fighters: []};
     }
 }

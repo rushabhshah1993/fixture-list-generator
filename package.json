@@ -1,5 +1,5 @@
 {
-  "name": "fixture-list-generator",
+  "name": "@rmshah/fixture-list-generator",
   "version": "1.0.0",
   "description": "A quick and easy generator for creating fixtures.",
   "main": "index.js",
