@@ -1,0 +1,26 @@
+{
+  "name": "fixture-list-generator",
+  "version": "1.0.0",
+  "description": "A quick and easy generator for creating fixtures.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rushabhshah1993/fixture-list-generator.git"
+  },
+  "keywords": [
+    "fixtures",
+    "fixture-list",
+    "list",
+    "generator",
+    "javascript"
+  ],
+  "author": "Rushabh Mulraj Shah",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rushabhshah1993/fixture-list-generator/issues"
+  },
+  "homepage": "https://github.com/rushabhshah1993/fixture-list-generator#readme"
+}
