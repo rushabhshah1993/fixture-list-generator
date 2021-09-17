@@ -2,8 +2,8 @@ let participants = {};
 let rounds = {};
 
 export const generate = pArr => {
-    // let participantsList = document.getElementById('list-form').value;
-    // let pArr = participantsList.split("\n");
+    createNewInstance();
+
     addToParticipantsObj(pArr);
     createTemplateRounds(pArr.length);
     let list = createRandomList(pArr);
@@ -15,6 +15,11 @@ export const generate = pArr => {
         participants: participants,
         rounds: rounds
     }
+}
+
+const createNewInstance = () => {
+    participants = {};
+    rounds = {};
 }
 
 const addToParticipantsObj = arr => {
@@ -61,14 +66,14 @@ const allot = list => {
     removeDuplicates(list[0]);
 }
 
-const removeDuplicates = firstParticpant => {
+const removeDuplicates = firstParticipant => {
     Object.keys(participants).map(fighterId => {
         let opponents = participants[fighterId];
         let isExists = opponents.includes(fighterId);
         if(isExists) {
             let round = opponents.indexOf(fighterId);
-            opponents[round] = firstParticpant;
-            firstParticpant[round] = fighterId;
+            opponents[round] = firstParticipant;
+            // firstParticpant[round] = fighterId;
         }
     })
     
