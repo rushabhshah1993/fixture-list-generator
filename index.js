@@ -1,15 +1,21 @@
 let participants = {};
 let rounds = {};
 
-export const generate = pArr => {
-    createNewInstance();
+const initialConfig = {
+    randomise: true
+};
 
+const generate = (pArr, config = initialConfig) => {
+    createNewInstance();
     addToParticipantsObj(pArr);
     createTemplateRounds(pArr.length);
-    let list = createRandomList(pArr);
-    allot(list);
-    console.log("Participants:   ", participants);
-    console.log("Rounds:   ", rounds);
+
+    if(config.randomise) {
+        let randomisedList = createRandomList(pArr);
+        allot(randomisedList);
+    } else {
+        allot(pArr);
+    }
 
     return {
         participants: participants,
@@ -25,13 +31,13 @@ const createNewInstance = () => {
 const addToParticipantsObj = arr => {
     arr.forEach(p => {
         let name = p.trim();
-        participants[name] = [];
+        participants[name] = [...Array(arr.length-1)];
     })
 }
 
 const createTemplateRounds = length => {
     for(let i=1; i<=length-1; i++) {
-        rounds[`round${i}`] = {fighters: []};
+        rounds[`round${i}`] = {players: []};
     }
 }
 
@@ -40,88 +46,83 @@ const createRandomList = arr => {
     let list = [...arr];
     while(list.length !== 0) {
         let randomPosition = Math.floor(Math.random() * list.length);
-        newArr.push(list[randomPosition].trim());
+        newArr.push(list[randomPosition]);
         list.splice(randomPosition, 1);
     }
     return newArr;
 }
 
 const allot = list => {
+    let halfStop = list.length/2;
+
     for(let i=0; i<list.length; i++) {
-        let p1 = list[i];
+        let player = list[i];
 
-        let j = list.length - (i+1);
-        for(j; j>0; j--) {
-            participants[p1].push(list[j]);
-        }
+        if(i === 0) {
+            let opponents = list.slice(i+1);
+            for(j=opponents.length-1; j>=0; j--) {
+                participants[player][opponents.length-j-1] = opponents[j];
+                participants[opponents[j]][opponents.length-j-1] = player;
 
-        if(participants[p1].length !== list.length-1) {
-            let k = list.length - 1;
-            for(k; k>list.length - (i+1); k--) {
-                participants[p1].push(list[k]);
+                addToRound(opponents.length-j, player, opponents[j]);
             }
+        } else if(i<halfStop) {
+            let opponents = list.slice(i+1, list.length-i);
+            for(j=opponents.length-1; j>=0; j--) {
+                participants[player][opponents.length-j-1] = opponents[j];
+                participants[opponents[j]][opponents.length-j-1] = player;
+
+                addToRound(opponents.length-j, player, opponents[j]);
+            }
+
+            let remainingPositions = participants[player]
+            .map((match, index) => {if(!match) return index;})
+            .filter(value => value);
+            let remainingOpponents = list.slice(list.length-i).reverse();
+
+            for(let index in remainingPositions) {
+                let position = remainingPositions[index];
+                let opponent = remainingOpponents[index];
+                participants[player][position] = opponent;
+                participants[opponent][position] = player;
+
+                addToRound(position+1, player, opponent);
+            }
+        } else if(i>=halfStop) {
+            break;
         }
     }
 
-    removeDuplicates(list[0]);
-}
+    let reversedList = list.reverse();
 
-const removeDuplicates = firstParticipant => {
-    Object.keys(participants).map(fighterId => {
-        let opponents = participants[fighterId];
-        let isExists = opponents.includes(fighterId);
-        if(isExists) {
-            let round = opponents.indexOf(fighterId);
-            opponents[round] = firstParticipant;
-            // firstParticpant[round] = fighterId;
-        }
-    })
+    for(let i=0; i<reversedList.length; i++) {
+        let player = list[i];
+
+        let halfStop = (reversedList.length/2);
+
+        if(i<halfStop) {
+            let opponents = reversedList.slice(i+1, halfStop+1);
+            let remainingPositions = participants[player]
+                .map((match, index) => {if(!match) return index;})
+                .filter(value => value);
     
-    let duplicatesNotExist = Object.keys(participants).every(fighter => participants[fighter].every(o => o !== fighter));
-    if(duplicatesNotExist) createRounds();
-}
+            for(let index in remainingPositions) {
+                let position = remainingPositions[index];
+                let opponent = opponents[index];
+                participants[player][position] = opponent;
+                participants[opponent][position] = player;
 
-const createRounds = () => {
-    for(let i=0; i<Object.keys(rounds).length; i++) {
-        let selected = [];
-        for(let fighter in participants) {
-            let roundOpponent = participants[fighter][i];
-            if(!selected.includes(fighter) && !selected.includes(roundOpponent)) {
-                selected.push(fighter);
-                selected.push(roundOpponent);
-                let randomNumber = Math.floor(Math.random() * 2);
-                let obj = {
-                    fighter1: randomNumber%2 === 0 ? fighter : roundOpponent,
-                    fighter2: randomNumber%2 === 0 ? roundOpponent : fighter
-                };
-                rounds[`round${i+1}`].fighters.push(obj);
+                addToRound(position+1, player, opponent);
             }
-        }
-
-        if(rounds[`round${i+1}`].fighters.length !== Object.keys(participants).length/2) {
-            let allParticipants = Object.keys(participants);
-            let remainingFighters = allParticipants.filter(fighter => !selected.includes(fighter));
-            let randomNumber = Math.floor(Math.random() * 2);
-            let obj = {
-                fighter1: randomNumber%2 === 0 ? remainingFighters[0] : remainingFighters[1],
-                fighter2: randomNumber%2 === 0 ? remainingFighters[1] : remainingFighters[0]
-            };
-            rounds[`round${i+1}`].fighters.push(obj);
-        }
+        } else break;
     }
-    randomiseRounds();
 }
 
-const randomiseRounds = () => {
-    for(let round in rounds) {
-        let roundFights = rounds[round].fighters;
-        let randomisedList = [];
-        let workingList = [...roundFights];
-        while(workingList.length !== 0) {
-            let randomPosition = Math.floor(Math.random() * workingList.length);
-            randomisedList.push(workingList[randomPosition]);
-            workingList.splice(randomPosition, 1);
-        }
-        rounds[round].fighters = randomisedList;
-    }
+const addToRound = (roundNo, player1, player2) => {
+    let randomNumber = Math.floor(Math.random() * 2);
+    let obj = {
+        player1: randomNumber%2 === 0 ? player1 : player2,
+        player2: randomNumber%2 === 0 ? player2 : player1
+    };
+    rounds[`round${roundNo}`].players.push(obj);
 }
