@@ -1,6 +1,6 @@
 {
   "name": "@rmshah/fixture-list-generator",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A quick and easy generator for creating fixtures.",
   "main": "index.js",
   "scripts": {
