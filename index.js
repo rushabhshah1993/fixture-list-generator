@@ -5,7 +5,7 @@ const initialConfig = {
     randomise: true
 };
 
-const generate = (pArr, config = initialConfig) => {
+export const generate = (pArr, config = initialConfig) => {
     createNewInstance();
     addToParticipantsObj(pArr);
     createTemplateRounds(pArr.length);
