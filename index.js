@@ -60,7 +60,7 @@ const allot = list => {
 
         if(i === 0) {
             let opponents = list.slice(i+1);
-            for(j=opponents.length-1; j>=0; j--) {
+            for(let j=opponents.length-1; j>=0; j--) {
                 participants[player][opponents.length-j-1] = opponents[j];
                 participants[opponents[j]][opponents.length-j-1] = player;
 
@@ -68,7 +68,7 @@ const allot = list => {
             }
         } else if(i<halfStop) {
             let opponents = list.slice(i+1, list.length-i);
-            for(j=opponents.length-1; j>=0; j--) {
+            for(let j=opponents.length-1; j>=0; j--) {
                 participants[player][opponents.length-j-1] = opponents[j];
                 participants[opponents[j]][opponents.length-j-1] = player;
 
